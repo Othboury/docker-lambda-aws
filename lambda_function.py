@@ -18,7 +18,7 @@ from network.Transformer import Transformer
 from keras.models import load_model
 from tensorflow import keras
 
-
+#Function to extract the features of an audio file
 def features_extractor(file):
     audio, sample_rate = librosa.load(file_name, res_type='kaiser_fast') 
     mfccs_features = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
@@ -26,17 +26,7 @@ def features_extractor(file):
     
     return mfccs_scaled_features
 
-#def load_model(s3, bucket):
-    #styles = ["Hosoda", "Hayao", "Shinkai", "Paprika"]
-    #models = {}
-
-    #for style in styles:
-#    model = Transformer()
-#    response = s3.get_object(Bucket=bucket, Key=f"model/mosquito_classification_model.h5")
-    #state = torch.load(BytesIO(response["Body"].read()))
- #   loaded_model = load_model(BytesIO(response["Body"].read()))
-  #  return loaded_model
-
+#Function to upload the classification model from the S3 bucket
 def loadModel(bucket:str, key:str):
     s3 = boto3.client('s3')
     with BytesIO() as f:
@@ -44,7 +34,8 @@ def loadModel(bucket:str, key:str):
         f.seek(0)
         loaded_model = load_model(f)
     return loaded_model
-    
+ 
+#The lambda_function that calls the other fucntions and do the prediction
 def lambda_handler(event, context):
     s3_client = boto3.client('s3')
     
